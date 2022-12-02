@@ -26,7 +26,7 @@ fn main() -> std::io::Result<()> {
             .next()
             .unwrap()
             .iter()
-            .fold(0, |sum, cal| sum + cal)
+            .sum::<i32>()
     );
 
     Ok(())
