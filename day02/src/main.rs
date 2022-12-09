@@ -74,7 +74,7 @@ fn main() -> std::io::Result<()> {
     }
     let strategy: Vec<&str> = file.split('\n').collect();
 
-    let total_score: i32 = strategy.iter().fold(0, |total, round| {
+    let total_score = strategy.iter().fold((0, 0), |scores, round| {
         let (left, right) = (round.chars().next().unwrap(), round.chars().nth(2).unwrap());
         let attack = match left {
             'A' => Ply::Rock,
@@ -83,31 +83,14 @@ fn main() -> std::io::Result<()> {
             // should never land here with AoC controlled inputs
             _ => panic!(),
         };
-        let response = match right {
+        let part1_response = match right {
             'X' => Ply::Rock,
             'Y' => Ply::Paper,
             'Z' => Ply::Scissors,
             // should never land here with AoC controlled inputs
             _ => panic!(),
         };
-
-        total + response.score_against(&attack)
-    });
-
-    println!("x - {}", total_score);
-
-    // Part 2
-    let total_score: i32 = strategy.iter().fold(0, |total, round| {
-        let (left, right) = (round.chars().next().unwrap(), round.chars().nth(2).unwrap());
-        let attack = match left {
-            'A' => Ply::Rock,
-            'B' => Ply::Paper,
-            'C' => Ply::Scissors,
-            // should never land here with AoC controlled inputs
-            _ => panic!(),
-        };
-        // response is actually the desired outcome (X - lose, Y - draw, Z - win)
-        let response = match right {
+        let part2_response = match right {
             'X' => attack.wins_against(),
             'Y' => attack.draws_against(),
             'Z' => attack.loses_against(),
@@ -115,9 +98,14 @@ fn main() -> std::io::Result<()> {
             _ => panic!(),
         };
 
-        total + response.score_against(&attack)
+        (
+            scores.0 + part1_response.score_against(&attack),
+            scores.1 + part2_response.score_against(&attack),
+        )
     });
 
-    println!("y - {}", total_score);
+    println!("x - {}", total_score.0);
+    println!("y - {}", total_score.1);
+
     Ok(())
 }
